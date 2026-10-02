@@ -1,267 +1,199 @@
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#071d37">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081d36">
 <title>중고 재고관리 Pro</title>
+<style>
+:root{--navy:#081d36;--blue:#2f73e8;--bg:#f4f7fb;--text:#132238;--muted:#758197;--card:#fff;--line:#e3e8f0;--danger:#d94d57}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%;font-family:Arial,"Noto Sans KR","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.page{min-height:100vh}
+.login-wrap{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:18px;background:linear-gradient(180deg,#081d36,#163d65)}
+.login-card{width:min(430px,94vw);background:#fff;border-radius:26px;padding:26px;box-shadow:0 24px 80px #00000044}
+.logo{width:66px;height:66px;border-radius:19px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2f73e8,#7a8cf5);font-weight:900;font-size:22px;margin-bottom:15px}
+.login-title{font-size:30px;font-weight:900;line-height:1.2;color:#0b1f37}
+.login-sub{margin-top:6px;color:#7c8799;font-size:14px}
+.field{display:grid;gap:7px;margin:14px 0}
+.field label{font-size:14px;font-weight:800}
+.field input,.field select,.field textarea{width:100%;min-height:50px;border:1px solid #d3dbe7;border-radius:13px;padding:0 13px;background:#fff;color:var(--text);font-size:16px;outline:none}
+.field textarea{padding:11px 13px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2f73e81e}
+.btn{min-height:46px;border:0;border-radius:12px;padding:10px 15px;background:#edf1f7;color:#2c3951;font-weight:800}
+.primary{background:var(--blue);color:#fff}.danger{background:var(--danger);color:#fff}.outline{background:#fff;border:1px solid #cbd5e3}
+.notice{margin-top:12px;padding:11px 12px;border-radius:12px;background:#f1f5fb;color:#50617a;font-size:12px;line-height:1.5}
+.top{height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:900}.brand .logo{width:38px;height:38px;border-radius:11px;font-size:13px;margin:0}
+.user{color:var(--blue);font-weight:800}
+.main{max-width:1280px;margin:0 auto;padding:16px 14px 100px}
+.title{font-size:26px;font-weight:900;margin-bottom:6px}.sub{color:var(--muted);font-size:13px;margin-bottom:13px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.stat{background:#fff;border:1px solid #edf1f6;border-radius:18px;padding:16px;box-shadow:0 9px 28px #14223a12}
+.stat small{color:#68748a}.stat b{display:block;font-size:30px;margin-top:6px}.stat em{font-style:normal;color:#8791a2;font-size:12px}
+.panel{background:#fff;border:1px solid #edf1f6;border-radius:18px;padding:15px;margin-top:13px;box-shadow:0 9px 28px #14223a0e}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.table-box{overflow:auto;border:1px solid #edf0f5;border-radius:15px}
+table{width:100%;min-width:720px;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #edf0f5;text-align:left;white-space:nowrap}th{background:#fafbfd;color:#647087;font-size:13px}td{font-size:14px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef4ff;color:#2f73e8;font-size:12px;font-weight:800}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full-col{grid-column:1/-1}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--navy);display:grid;grid-template-columns:repeat(8,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.nav{border:0;background:transparent;color:#d7dfeb;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;min-width:0}.nav.active{color:#5ea0ff}.nav span:first-child{font-size:19px;line-height:19px}.nav span:last-child{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.overlay{position:fixed;inset:0;z-index:100;background:#000000a6;display:flex;justify-content:center;align-items:center;padding:12px}
+.modal{width:min(560px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:15px}
+.camera{position:relative;aspect-ratio:4/3;background:#10151f;border-radius:14px;overflow:hidden}.camera video{width:100%;height:100%;object-fit:cover;display:block}.frame{position:absolute;left:9%;right:9%;top:23%;bottom:23%;border:2px solid #fff;border-radius:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.small{font-size:12px;color:#68768a;line-height:1.5;margin-top:8px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.top{height:62px;padding:0 11px}.brand{font-size:15px}.brand .logo{width:34px;height:34px}.main{padding:12px 10px 95px}.title{font-size:22px}.cards{gap:8px}.stat{padding:13px;border-radius:15px}.stat b{font-size:25px}.form-grid{grid-template-columns:1fr}.full-col{grid-column:auto}.nav span:first-child{font-size:17px}.nav span:last-child{font-size:8px}}
+@media(max-width:390px){.bottom{grid-template-columns:repeat(4,1fr);grid-auto-rows:49px}}
+</style>
 </head>
-<body style="margin:0;background:#f4f7fb;color:#15243a;font-family:Arial,'Noto Sans KR','Malgun Gothic',sans-serif;">
-<div id="root"></div>
+<body>
+
+<div id="login-screen" class="login-wrap">
+  <div class="login-card">
+    <div class="logo">IP</div>
+    <div class="login-title">중고 재고관리 Pro</div>
+    <div class="login-sub">휴대폰 · PC 공동사용 재고관리</div>
+    <div class="field"><label>아이디</label><input id="login-id" autocomplete="username" placeholder="아이디"></div>
+    <div class="field"><label>비밀번호</label><input id="login-pw" type="password" autocomplete="current-password" placeholder="비밀번호"></div>
+    <button id="login-btn" class="btn primary" style="width:100%">로그인</button>
+    <div class="notice">데모 관리자: <b>admin / admin1234</b><br>데모 사용자: <b>staff / staff1234</b></div>
+    <div class="small">※ 여러 기기에서 같은 재고를 사용하려면 Supabase 서버 연결이 추가로 필요합니다.</div>
+  </div>
+</div>
+
+<div id="app" class="page" style="display:none">
+  <header class="top">
+    <div class="brand"><div class="logo">IP</div><div>중고 재고관리 Pro</div></div>
+    <div class="user">● <span id="user-name">관리자</span></div>
+  </header>
+  <main id="main" class="main"></main>
+  <nav class="bottom">
+    <button class="nav" data-view="dashboard"><span>⌂</span><span>대시보드</span></button>
+    <button class="nav" data-view="inventory"><span>▣</span><span>중고재고</span></button>
+    <button class="nav" data-view="inbound"><span>↓</span><span>입고</span></button>
+    <button class="nav" data-view="outbound"><span>↑</span><span>출고</span></button>
+    <button class="nav" data-view="reentry"><span>↻</span><span>재입고</span></button>
+    <button class="nav" data-view="history"><span>▤</span><span>입·출고</span></button>
+    <button class="nav" data-view="analytics"><span>▥</span><span>분석</span></button>
+    <button class="nav" data-view="settings"><span>⚙</span><span>관리자</span></button>
+  </nav>
+</div>
 
 <script>
 "use strict";
+const data={inventory:[],history:[],disposals:[]};
+let user=null,view="dashboard",scannerStream=null;
 
-/* ===== 공용 서버 연결 설정 =====
-   Supabase를 연결할 때 아래 두 값을 입력합니다.
-   Secret/Service Role Key는 절대 넣지 마세요.
-*/
-const CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_PUBLISHABLE_KEY: ""
-};
+function load(){try{Object.assign(data,JSON.parse(localStorage.getItem("uip-final-static")||"{}"))}catch(e){}}
+function save(){localStorage.setItem("uip-final-static",JSON.stringify(data))}
+function e(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function uid(){return crypto?.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
 
-const DEMO = {
-  admin:{password:"admin1234",name:"관리자",role:"admin"},
-  staff:{password:"staff1234",name:"직원",role:"user"}
-};
+function setView(v){view=v;document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===v));render()}
+document.querySelectorAll(".nav").forEach(x=>x.onclick=()=>setView(x.dataset.view));
 
-const A = {
-  user:null,view:"dashboard",shared:false,sb:null,realtime:null,
-  inventory:[],history:[],disposals:[]
-};
-
-const NAV = [
-  ["dashboard","⌂","대시보드"],["inventory","▣","중고재고"],["inbound","↓","입고"],
-  ["outbound","↑","출고"],["reentry","↻","재입고"],["history","▤","입·출고"],
-  ["analytics","▥","분석"],["settings","⚙","관리자"]
-];
-
-const esc = v => String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const $ = (s,r=document)=>r.querySelector(s);
-const now = ()=>new Date().toISOString();
-const uid = ()=>crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random());
-
-function loadLocal(){
-  try{
-    const d=JSON.parse(localStorage.getItem("uip-web-data-final")||"{}");
-    A.inventory=Array.isArray(d.inventory)?d.inventory:[];
-    A.history=Array.isArray(d.history)?d.history:[];
-    A.disposals=Array.isArray(d.disposals)?d.disposals:[];
-  }catch(e){A.inventory=[];A.history=[];A.disposals=[];}
-}
-function saveLocal(){
-  localStorage.setItem("uip-web-data-final",JSON.stringify({
-    inventory:A.inventory,history:A.history,disposals:A.disposals
-  }));
-}
-
-function loginScreen(){
-  document.body.innerHTML = `
-  <div style="min-height:100vh;background:linear-gradient(180deg,#071d37 0%,#183f69 100%);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box">
-    <div style="width:min(430px,94vw);background:#fff;border-radius:26px;padding:25px;box-sizing:border-box;box-shadow:0 25px 80px rgba(0,0,0,.28)">
-      <div style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#2f73e8,#7d8df7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;margin-bottom:14px;box-shadow:0 7px 20px rgba(47,115,232,.25)">IP</div>
-      <div style="font-size:30px;line-height:1.2;font-weight:900;color:#0a1d35">중고 재고관리 Pro</div>
-      <div style="margin-top:5px;color:#7b8799;font-size:14px">휴대폰 · PC 공동사용 재고관리</div>
-      <div style="margin-top:14px">
-        <label style="display:block;font-size:14px;font-weight:800;margin-bottom:7px">아이디</label>
-        <input id="login-id" autocomplete="username" placeholder="아이디"
-          style="width:100%;height:50px;padding:0 13px;border:1px solid #d4dce8;border-radius:13px;box-sizing:border-box;font-size:16px;background:#fff">
-      </div>
-      <div style="margin-top:13px">
-        <label style="display:block;font-size:14px;font-weight:800;margin-bottom:7px">비밀번호</label>
-        <input id="login-pw" type="password" autocomplete="current-password" placeholder="비밀번호"
-          style="width:100%;height:50px;padding:0 13px;border:1px solid #d4dce8;border-radius:13px;box-sizing:border-box;font-size:16px;background:#fff">
-      </div>
-      <button id="login-btn" style="margin-top:14px;width:100%;height:48px;border:0;border-radius:12px;background:#2f73e8;color:#fff;font-size:16px;font-weight:800">로그인</button>
-      <div style="margin-top:12px;background:#f1f5fb;color:#50617a;border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.55">
-        데모 관리자: <b>admin / admin1234</b><br>
-        데모 사용자: <b>staff / staff1234</b>
-      </div>
-      <div style="margin-top:8px;color:#68768b;font-size:12px;line-height:1.45">바코드 촬영은 HTTPS 웹주소와 카메라 권한이 필요합니다.</div>
-    </div>
-  </div>`;
-  $("#login-btn").onclick=login;
-}
-
-function appShell(){
-  document.body.innerHTML=`
-  <div style="min-height:100vh;background:#f4f7fb">
-    <header style="height:64px;background:#fff;border-bottom:1px solid #e3e8ef;display:flex;align-items:center;justify-content:space-between;padding:0 13px;box-sizing:border-box;position:sticky;top:0;z-index:30">
-      <div style="display:flex;align-items:center;gap:9px;font-size:17px;font-weight:900">
-        <div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#2f73e8,#7d8df7);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900">IP</div>
-        <div>중고 재고관리 Pro</div>
-      </div>
-      <div style="font-size:14px;font-weight:800;color:#2f73e8">● ${esc(A.user?.name||"사용자")}</div>
-    </header>
-    <main id="main" style="max-width:1280px;margin:0 auto;padding:14px 12px 96px;box-sizing:border-box"></main>
-    <nav id="bottom" style="position:fixed;left:0;right:0;bottom:0;z-index:50;background:#071d37;padding:6px 4px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(8,minmax(0,1fr));box-sizing:border-box">
-      ${NAV.map(n=>`<button class="nav-item" data-nav="${n[0]}" style="border:0;background:transparent;color:${A.view===n[0]?"#5ea0ff":"#d7dfeb"};min-width:0;padding:5px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:18px;line-height:18px">${n[1]}</span><span style="font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${n[2]}</span></button>`).join("")}
-    </nav>
-  </div>`;
-  document.querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>{A.view=b.dataset.nav;render();});
-  render();
-}
-
-function statCard(label,value,sub){
-  return `<div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;box-shadow:0 8px 25px rgba(20,34,58,.06)"><div style="font-size:13px;color:#68748b">${label}</div><div style="font-size:28px;font-weight:900;margin-top:5px">${value}</div><div style="font-size:12px;color:#8791a1;margin-top:3px">${sub}</div></div>`;
+function table(rows){
+  if(!rows.length)return '<div class="small" style="text-align:center;padding:25px">내역이 없습니다.</div>';
+  return '<div class="table-box"><table><thead><tr><th>일시</th><th>구분</th><th>모델명</th><th>바코드</th><th>수량</th><th>가맹점</th><th>내용</th></tr></thead><tbody>'+
+  rows.map(x=>'<tr><td>'+e(new Date(x.at).toLocaleString("ko-KR"))+'</td><td>'+e(x.kind)+'</td><td>'+e(x.model)+'</td><td>'+e(x.serial)+'</td><td>'+Number(x.qty||0)+'</td><td>'+e(x.store)+'</td><td>'+e(x.note||x.reason||"")+'</td></tr>').join("")+
+  '</tbody></table></div>';
 }
 
 function dashboard(){
-  const total=A.inventory.reduce((a,x)=>a+Number(x.qty||0),0);
-  const inn=A.history.filter(x=>x.kind==="입고").reduce((a,x)=>a+Number(x.qty||0),0);
-  const out=A.history.filter(x=>x.kind==="출고").reduce((a,x)=>a+Number(x.qty||0),0);
-  const re=A.history.filter(x=>x.kind==="재입고").reduce((a,x)=>a+Number(x.qty||0),0);
-  return `<div style="font-size:25px;font-weight:900;margin-bottom:5px">대시보드</div>
-  <div style="font-size:13px;color:#748197;margin-bottom:13px">공유형 중고재고관리</div>
-  <div id="stats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">${statCard("전체 재고",total+" 개","현재 보유 수량")}${statCard("입고",inn+" 개","누적 입고")}${statCard("출고",out+" 개","누적 출고")}${statCard("재입고",re+" 개","누적 재입고")}</div>
-  <div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;margin-top:13px;box-shadow:0 8px 25px rgba(20,34,58,.06)"><div style="font-size:17px;font-weight:800;margin-bottom:9px">최근 입·출고 현황</div>${historyTable(A.history.slice().reverse().slice(0,8))}</div>`;
+  const qty=data.inventory.reduce((a,x)=>a+Number(x.qty||0),0);
+  const inn=data.history.filter(x=>x.kind==="입고").reduce((a,x)=>a+Number(x.qty||0),0);
+  const out=data.history.filter(x=>x.kind==="출고").reduce((a,x)=>a+Number(x.qty||0),0);
+  const re=data.history.filter(x=>x.kind==="재입고").reduce((a,x)=>a+Number(x.qty||0),0);
+  return '<div class="title">대시보드</div><div class="sub">재고 현황과 최근 작업을 확인합니다.</div>'+
+  '<div class="cards"><div class="stat"><small>전체 재고</small><b>'+qty+' 개</b><em>현재 보유 수량</em></div><div class="stat"><small>입고</small><b>'+inn+' 개</b><em>누적 입고</em></div><div class="stat"><small>출고</small><b>'+out+' 개</b><em>누적 출고</em></div><div class="stat"><small>재입고</small><b>'+re+' 개</b><em>누적 재입고</em></div></div>'+
+  '<div class="panel"><h3>최근 입·출고 현황</h3>'+table(data.history.slice().reverse().slice(0,8))+'</div>';
 }
 
 function inventory(){
-  return `<div style="font-size:25px;font-weight:900;margin-bottom:12px">중고재고</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn-in" style="height:44px;border:0;border-radius:12px;background:#2f73e8;color:#fff;padding:0 15px;font-weight:800">입고 등록</button><button class="btn-disposal" style="height:44px;border:0;border-radius:12px;background:#edf1f7;color:#2b3750;padding:0 15px;font-weight:800">폐기 제품 보기</button></div>
-  <div class="table-wrap">${inventoryTable()}</div>`;
-}
-function inventoryTable(){
-  if(!A.inventory.length)return `<div style="background:#fff;border:1px solid #edf1f6;border-radius:16px;padding:35px;text-align:center;color:#8b95a7">등록된 재고가 없습니다.</div>`;
-  return `<div style="overflow:auto"><table style="width:100%;min-width:700px;border-collapse:collapse;background:#fff"><thead><tr><th style="padding:10px;background:#fafbfd;text-align:left">모델명</th><th style="padding:10px;background:#fafbfd;text-align:left">바코드번호</th><th style="padding:10px;background:#fafbfd;text-align:left">수량</th><th style="padding:10px;background:#fafbfd;text-align:left">상태</th><th style="padding:10px;background:#fafbfd;text-align:left">수정</th></tr></thead><tbody>${A.inventory.map((x,i)=>`<tr><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.model)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.serial)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${x.qty}</td><td style="padding:10px;border-top:1px solid #edf0f5"><span style="display:inline-block;padding:4px 8px;border-radius:999px;background:#eef4ff;color:#2f73e8;font-size:12px">${esc(x.status||"정상")}</span></td><td style="padding:10px;border-top:1px solid #edf0f5"><button class="edit-stock" data-i="${i}" style="height:38px;border:0;border-radius:10px;background:#edf1f7;padding:0 12px">수정</button></td></tr>`).join("")}</tbody></table></div>`;
+  return '<div class="title">중고재고</div><div class="toolbar"><button class="btn primary" id="go-in">입고 등록</button><button class="btn" id="go-disposal">폐기 제품</button></div>'+
+  (data.inventory.length?'<div class="table-box"><table><thead><tr><th>모델명</th><th>바코드번호</th><th>수량</th><th>상태</th><th>수정</th></tr></thead><tbody>'+data.inventory.map((x,i)=>'<tr><td>'+e(x.model)+'</td><td>'+e(x.serial)+'</td><td>'+x.qty+'</td><td><span class="badge">'+e(x.status||"정상")+'</span></td><td><button class="btn edit-stock" data-i="'+i+'">수정</button></td></tr>').join("")+'</tbody></table></div>':'<div class="panel" style="text-align:center;color:#8994a6">등록된 재고가 없습니다.</div>');
 }
 
-function txPage(kind){
+function tx(kind){
   const p=kind==="입고"?"in":kind==="출고"?"out":"re";
-  return `<div style="font-size:25px;font-weight:900;margin-bottom:12px">${kind}</div>
-  <div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:15px;box-shadow:0 8px 25px rgba(20,34,58,.06)">
-    <label style="display:block;font-size:14px;font-weight:800;margin-bottom:7px">모델명</label>
-    <input id="${p}-model" style="width:100%;height:50px;border:1px solid #d4dce8;border-radius:13px;padding:0 12px;box-sizing:border-box;font-size:16px">
-    <label style="display:block;font-size:14px;font-weight:800;margin:13px 0 7px">바코드번호</label>
-    <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
-      <input id="${p}-serial" placeholder="입력 또는 촬영" autocomplete="off" style="width:100%;height:50px;border:1px solid #d4dce8;border-radius:13px;padding:0 12px;box-sizing:border-box;font-size:16px">
-      <button id="scan-${p}" style="height:50px;border:0;border-radius:13px;background:#edf1f7;padding:0 12px;font-weight:800">📷 촬영</button>
-    </div>
-    <label style="display:block;font-size:14px;font-weight:800;margin:13px 0 7px">수량</label>
-    <input id="${p}-qty" type="number" min="1" value="1" style="width:100%;height:50px;border:1px solid #d4dce8;border-radius:13px;padding:0 12px;box-sizing:border-box;font-size:16px">
-    ${kind!=="입고"?`<label style="display:block;font-size:14px;font-weight:800;margin:13px 0 7px">가맹점</label><input id="${p}-store" style="width:100%;height:50px;border:1px solid #d4dce8;border-radius:13px;padding:0 12px;box-sizing:border-box;font-size:16px">`:""}
-    ${kind==="입고"?`<label style="display:block;font-size:14px;font-weight:800;margin:13px 0 7px">입고내용</label><select id="in-type" style="width:100%;height:50px;border:1px solid #d4dce8;border-radius:13px;padding:0 12px;box-sizing:border-box;font-size:16px"><option>A/S 입고</option><option>수리입고</option><option>폐기</option></select>
-    <div id="reason-box" style="display:none;margin-top:13px"><label style="display:block;font-size:14px;font-weight:800;margin-bottom:7px">폐기 사유</label><textarea id="in-reason" rows="3" style="width:100%;border:1px solid #d4dce8;border-radius:13px;padding:11px 12px;box-sizing:border-box;font-size:16px"></textarea></div>`:""}
-    <div style="display:grid;gap:9px;margin-top:14px">${kind==="입고"?'<button id="go-disposal" style="height:46px;border:0;border-radius:12px;background:#edf1f7;font-weight:800">폐기 제품 보기</button>':""}<button id="save-${p}" style="height:48px;border:0;border-radius:12px;background:#2f73e8;color:#fff;font-weight:800">${kind} 저장</button></div>
-  </div>`;
+  return '<div class="title">'+kind+'</div><div class="panel"><div class="field"><label>모델명</label><input id="'+p+'-model" placeholder="모델명"></div>'+
+  '<div class="field"><label>바코드번호</label><div class="barcode-row"><input id="'+p+'-serial" placeholder="입력 또는 촬영" autocomplete="off"><button class="btn" id="scan-'+p+'">📷 촬영</button></div></div>'+
+  '<div class="field"><label>수량</label><input id="'+p+'-qty" type="number" min="1" value="1"></div>'+
+  (kind!=="입고"?'<div class="field"><label>가맹점</label><input id="'+p+'-store" placeholder="가맹점명"></div>':'')+
+  (kind==="입고"?'<div class="field"><label>입고내용</label><select id="in-type"><option>A/S 입고</option><option>수리입고</option><option>폐기</option></select></div><div class="field" id="reason-box" style="display:none"><label>폐기 사유</label><textarea id="in-reason" rows="3"></textarea></div>':'')+
+  '<div class="form-actions">'+(kind==="입고"?'<button class="btn outline" id="go-disposal2">폐기 제품 보기</button>':'')+'<button class="btn primary" id="save-'+p+'">'+kind+' 저장</button></div></div>';
 }
-function inbound(){return txPage("입고")} function outbound(){return txPage("출고")} function reentry(){return txPage("재입고")}
 
-function historyTable(rows){
-  if(!rows.length)return `<div style="padding:32px;text-align:center;color:#8b95a7">내역이 없습니다.</div>`;
-  return `<div style="overflow:auto"><table style="width:100%;min-width:760px;border-collapse:collapse;background:#fff"><thead><tr><th style="padding:10px;background:#fafbfd;text-align:left">일시</th><th style="padding:10px;background:#fafbfd;text-align:left">구분</th><th style="padding:10px;background:#fafbfd;text-align:left">모델명</th><th style="padding:10px;background:#fafbfd;text-align:left">바코드</th><th style="padding:10px;background:#fafbfd;text-align:left">수량</th><th style="padding:10px;background:#fafbfd;text-align:left">가맹점</th><th style="padding:10px;background:#fafbfd;text-align:left">내용</th></tr></thead><tbody>${rows.map(x=>`<tr><td style="padding:10px;border-top:1px solid #edf0f5">${esc(new Date(x.at).toLocaleString("ko-KR"))}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.kind)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.model)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.serial)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${Number(x.qty||0)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.store)}</td><td style="padding:10px;border-top:1px solid #edf0f5">${esc(x.note||x.reason||"")}</td></tr>`).join("")}</tbody></table></div>`;
-}
-function history(){return `<div style="font-size:25px;font-weight:900;margin-bottom:12px">입·출고 내역</div><button id="export" style="height:44px;border:0;border-radius:12px;background:#2f73e8;color:#fff;padding:0 15px;font-weight:800;margin-bottom:12px">전체 자료 내보내기</button><div class="panel" style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:12px">${historyTable(A.history.slice().reverse())}</div>`}
+function history(){return '<div class="title">입·출고 내역</div><div class="toolbar"><button class="btn primary" id="export">전체 자료 내보내기</button></div><div class="panel">'+table(data.history.slice().reverse())+'</div>'}
+function disposal(){return '<div class="title">폐기 제품</div><div class="sub">폐기 사유까지 확인합니다.</div><div class="panel">'+table(data.disposals.slice().reverse())+'</div>'}
 
 function analytics(){
-  const y=new Date().getFullYear();
-  const months=Array.from({length:12},(_,i)=>i+1);
-  const sum=(m,k)=>A.history.filter(x=>{const d=new Date(x.at);return d.getFullYear()===y&&d.getMonth()+1===m&&x.kind===k}).reduce((a,x)=>a+Number(x.qty||0),0);
+  const y=new Date().getFullYear(),months=[1,2,3,4,5,6,7,8,9,10,11,12];
+  const sum=(m,k)=>data.history.filter(x=>{const d=new Date(x.at);return d.getFullYear()===y&&d.getMonth()+1===m&&x.kind===k}).reduce((a,x)=>a+Number(x.qty||0),0);
   const max=Math.max(1,...months.flatMap(m=>[sum(m,"입고"),sum(m,"출고"),sum(m,"재입고")]));
-  return `<div style="font-size:25px;font-weight:900;margin-bottom:12px">월간 / 연간 분석</div>
-  <div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;box-shadow:0 8px 25px rgba(20,34,58,.06)"><div style="font-size:17px;font-weight:800;margin-bottom:10px">${y}년 월간 그래프</div>
-    <div style="height:245px;display:flex;align-items:flex-end;gap:4px;padding:16px 3px 33px;border-bottom:1px solid #dfe5ed">
-    ${months.map(m=>`<div style="flex:1;height:100%;display:flex;gap:2px;align-items:flex-end;position:relative"><div title="입고 ${sum(m,"입고")}" style="height:${Math.max(3,sum(m,"입고")/max*180)}px;flex:1;background:#2f73e8;border-radius:4px 4px 0 0"></div><div title="출고 ${sum(m,"출고")}" style="height:${Math.max(3,sum(m,"출고")/max*180)}px;flex:1;background:#68758a;border-radius:4px 4px 0 0"></div><div title="재입고 ${sum(m,"재입고")}" style="height:${Math.max(3,sum(m,"재입고")/max*180)}px;flex:1;background:#7d89ee;border-radius:4px 4px 0 0"></div><span style="position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);font-size:9px">${m}월</span></div>`).join("")}
-    </div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px"><span class="badge" style="display:inline-block;padding:4px 8px;border-radius:999px;background:#eef4ff;color:#2f73e8;font-size:12px">파랑: 입고</span><span style="display:inline-block;padding:4px 8px;border-radius:999px;background:#eef0f4;color:#5f6b7d;font-size:12px">회색: 출고</span><span style="display:inline-block;padding:4px 8px;border-radius:999px;background:#f0f0ff;color:#626fe7;font-size:12px">보라: 재입고</span></div>
-  </div>
-  <div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;margin-top:13px">${annual()}</div>`;
+  return '<div class="title">월간 / 연간 분석</div><div class="panel"><h3>'+y+'년 월간 그래프</h3><div style="height:235px;display:flex;align-items:flex-end;gap:4px;padding:15px 2px 33px;border-bottom:1px solid #dfe5ed">'+months.map(m=>'<div style="flex:1;height:100%;display:flex;gap:2px;align-items:flex-end;position:relative"><div title="입고 '+sum(m,"입고")+'" style="height:'+Math.max(3,sum(m,"입고")/max*175)+'px;flex:1;background:#2f73e8;border-radius:4px 4px 0 0"></div><div title="출고 '+sum(m,"출고")+'" style="height:'+Math.max(3,sum(m,"출고")/max*175)+'px;flex:1;background:#66748a;border-radius:4px 4px 0 0"></div><div title="재입고 '+sum(m,"재입고")+'" style="height:'+Math.max(3,sum(m,"재입고")/max*175)+'px;flex:1;background:#7d89ef;border-radius:4px 4px 0 0"></div><span style="position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);font-size:9px">'+m+'월</span></div>').join("")+'</div></div>'+
+  '<div class="panel"><h3>연간 내역</h3>'+annual()+'</div>';
 }
 function annual(){
-  const ys=[...new Set(A.history.map(x=>new Date(x.at).getFullYear()))].sort((a,b)=>b-a);
-  if(!ys.length)return `<div style="padding:30px;text-align:center;color:#8b95a7">아직 데이터가 없습니다.</div>`;
-  const sum=(y,k)=>A.history.filter(x=>new Date(x.at).getFullYear()===y&&x.kind===k).reduce((a,x)=>a+Number(x.qty||0),0);
-  return `<div style="font-size:17px;font-weight:800;margin-bottom:9px">연간 내역</div><div style="overflow:auto"><table style="width:100%;min-width:520px;border-collapse:collapse"><thead><tr><th style="padding:10px;background:#fafbfd;text-align:left">연도</th><th style="padding:10px;background:#fafbfd;text-align:left">입고</th><th style="padding:10px;background:#fafbfd;text-align:left">출고</th><th style="padding:10px;background:#fafbfd;text-align:left">재입고</th><th style="padding:10px;background:#fafbfd;text-align:left">폐기</th></tr></thead><tbody>${ys.map(y=>`<tr><td style="padding:10px;border-top:1px solid #edf0f5">${y}</td><td style="padding:10px;border-top:1px solid #edf0f5">${sum(y,"입고")}</td><td style="padding:10px;border-top:1px solid #edf0f5">${sum(y,"출고")}</td><td style="padding:10px;border-top:1px solid #edf0f5">${sum(y,"재입고")}</td><td style="padding:10px;border-top:1px solid #edf0f5">${sum(y,"폐기")}</td></tr>`).join("")}</tbody></table></div>`;
+  const ys=[...new Set(data.history.map(x=>new Date(x.at).getFullYear()))].sort((a,b)=>b-a);if(!ys.length)return '<div class="small">아직 데이터가 없습니다.</div>';
+  const s=(y,k)=>data.history.filter(x=>new Date(x.at).getFullYear()===y&&x.kind===k).reduce((a,x)=>a+Number(x.qty||0),0);
+  return '<div class="table-box"><table><thead><tr><th>연도</th><th>입고</th><th>출고</th><th>재입고</th><th>폐기</th></tr></thead><tbody>'+ys.map(y=>'<tr><td>'+y+'</td><td>'+s(y,"입고")+'</td><td>'+s(y,"출고")+'</td><td>'+s(y,"재입고")+'</td><td>'+s(y,"폐기")+'</td></tr>').join("")+'</tbody></table></div>';
 }
-function settings(){
-  return `<div style="font-size:25px;font-weight:900;margin-bottom:12px">관리자 설정</div><div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px"><div style="font-size:17px;font-weight:800">공용 서버 연결</div><div style="margin-top:9px;padding:10px 12px;border-radius:11px;background:#f1f5fb;color:#50617a;font-size:13px">${A.shared?"Supabase 공유 모드":"현재 기기 로컬 데모 모드"}</div></div><div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;margin-top:13px"><div style="font-size:17px;font-weight:800">전체 초기화</div><button id="reset" style="margin-top:10px;height:45px;border:0;border-radius:12px;background:#d94d57;color:#fff;padding:0 15px;font-weight:800">전체 초기화</button></div><div style="background:#fff;border:1px solid #edf1f6;border-radius:17px;padding:14px;margin-top:13px"><button id="logout" style="height:45px;border:0;border-radius:12px;background:#edf1f7;padding:0 15px;font-weight:800">로그아웃</button></div>`;
-}
+function settings(){return '<div class="title">관리자 설정</div><div class="panel"><h3>공용 서버</h3><div class="notice">현재 HTML은 로컬 데모 모드입니다. Supabase URL과 Publishable Key를 연결하면 여러 기기에서 공용 데이터를 사용할 수 있습니다.</div></div><div class="panel"><h3>전체 초기화</h3><button class="btn danger" id="reset">전체 초기화</button></div><div class="panel"><button class="btn" id="logout">로그아웃</button></div>'}
 
 function render(){
-  const map={dashboard,inventory,inbound,outbound,reentry,history,analytics,settings,disposal};
-  $("#main").innerHTML=(map[A.view]||dashboard)();
+  const pages={dashboard,inventory,inbound:()=>tx("입고"),outbound:()=>tx("출고"),reentry:()=>tx("재입고"),history,disposal,analytics,settings};
+  document.getElementById("main").innerHTML=(pages[view]||dashboard)();
+  document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===view));
   bind();
 }
-
 function bind(){
-  const scans=[["#scan-in","#in-serial"],["#scan-out","#out-serial"],["#scan-re","#re-serial"]];
-  scans.forEach(([b,t])=>{if($(b))$(b).onclick=()=>openScanner(t);if($(t))$(t).onclick=()=>openScanner(t)});
+  [["#scan-in","#in-serial"],["#scan-out","#out-serial"],["#scan-re","#re-serial"]].forEach(([b,t])=>{if($(b))$(b).onclick=()=>scanner(t);if($(t))$(t).onclick=()=>scanner(t)});
   if($("#in-type"))$("#in-type").onchange=e=>$("#reason-box").style.display=e.target.value==="폐기"?"block":"none";
-  if($("#save-in"))$("#save-in").onclick=()=>saveTx("입고");
-  if($("#save-out"))$("#save-out").onclick=()=>saveTx("출고");
-  if($("#save-re"))$("#save-re").onclick=()=>saveTx("재입고");
-  if($("#go-disposal"))$("#go-disposal").onclick=()=>{A.view="disposal";render()};
-  if($("#view-disposal"))$("#view-disposal").onclick=()=>{A.view="disposal";render()};
-  if($("#go-inbound"))$("#go-inbound").onclick=()=>{A.view="inbound";render()};
-  if($("#export"))$("#export").onclick=exportAll;
-  if($("#reset"))$("#reset").onclick=resetAll;
-  if($("#logout"))$("#logout").onclick=logout;
-  document.querySelectorAll(".btn-in").forEach(b=>b.onclick=()=>{A.view="inbound";render()});
-  document.querySelectorAll(".btn-disposal").forEach(b=>b.onclick=()=>{A.view="disposal";render()});
-  document.querySelectorAll(".edit-stock").forEach(b=>b.onclick=()=>editStock(Number(b.dataset.i)));
+  if($("#save-in"))$("#save-in").onclick=()=>saveTx("입고");if($("#save-out"))$("#save-out").onclick=()=>saveTx("출고");if($("#save-re"))$("#save-re").onclick=()=>saveTx("재입고");
+  if($("#go-in"))$("#go-in").onclick=()=>{view="inbound";render()};if($("#go-disposal"))$("#go-disposal").onclick=()=>{view="disposal";render()};if($("#go-disposal2"))$("#go-disposal2").onclick=()=>{view="disposal";render()};
+  if($("#export"))$("#export").onclick=exportData;if($("#reset"))$("#reset").onclick=resetAll;if($("#logout"))$("#logout").onclick=logout;
+  document.querySelectorAll(".edit-stock").forEach(b=>b.onclick=()=>{const x=data.inventory[Number(b.dataset.i)],q=prompt("수정할 수량",x.qty);if(q!==null&&Number(q)>=0){x.qty=Number(q);save();render()}});
 }
-
+function $(s){return document.querySelector(s)}
 function saveTx(kind){
-  const p=kind==="입고"?"in":kind==="출고"?"out":"re";
-  const model=$("#"+p+"-model").value.trim(), serial=$("#"+p+"-serial").value.trim(), qty=Number($("#"+p+"-qty").value||0);
+  const p=kind==="입고"?"in":kind==="출고"?"out":"re",model=$("#"+p+"-model").value.trim(),serial=$("#"+p+"-serial").value.trim(),qty=Number($("#"+p+"-qty").value||0);
   if(!model||!serial||qty<=0)return alert("모델명, 바코드번호, 수량을 입력하세요.");
   const store=kind==="입고"?"":$("#"+p+"-store").value.trim();let note="",reason="";
-  if(kind==="입고"){note=$("#in-type").value;if(note==="폐기"){reason=$("#in-reason").value.trim();if(!reason)return alert("폐기 사유를 입력하세요.");}}
-  let inv=A.inventory.find(x=>x.model===model&&x.serial===serial);
-  if(kind==="출고"){if(!inv||Number(inv.qty)<qty)return alert("재고가 부족합니다.");inv.qty-=qty}
-  else if(kind==="재입고"){if(inv)inv.qty+=qty;else{inv={id:uid(),model,serial,qty,status:"정상"};A.inventory.push(inv)}}
-  else if(note!=="폐기"){if(inv)inv.qty+=qty;else{inv={id:uid(),model,serial,qty,status:"정상"};A.inventory.push(inv)}}
-  const x={id:uid(),kind:note==="폐기"?"폐기":kind,model,serial,qty,store,note,reason,at:now(),actor:A.user?.username||"local"};
-  A.history.push(x);if(x.kind==="폐기")A.disposals.push(x);saveLocal();alert(kind+" 저장 완료");render();
+  if(kind==="입고"){note=$("#in-type").value;if(note==="폐기"){reason=$("#in-reason").value.trim();if(!reason)return alert("폐기 사유를 입력하세요.")}}
+  let inv=data.inventory.find(x=>x.model===model&&x.serial===serial);
+  if(kind==="출고"){if(!inv||inv.qty<qty)return alert("재고가 부족합니다.");inv.qty-=qty}
+  else if(kind==="재입고"){if(inv)inv.qty+=qty;else{inv={id:uid(),model,serial,qty,status:"정상"};data.inventory.push(inv)}}
+  else if(note!=="폐기"){if(inv)inv.qty+=qty;else{inv={id:uid(),model,serial,qty,status:"정상"};data.inventory.push(inv)}}
+  const x={id:uid(),kind:note==="폐기"?"폐기":kind,model,serial,qty,store,note,reason,at:now(),actor:user?.id||"local"};
+  data.history.push(x);if(x.kind==="폐기")data.disposals.push(x);save();alert(kind+" 저장 완료");render();
 }
-function editStock(i){
-  const x=A.inventory[i];if(!x)return;const q=prompt("수정할 재고 수량",String(x.qty));if(q===null)return;
-  const n=Number(q);if(!Number.isFinite(n)||n<0)return alert("올바른 수량을 입력하세요.");
-  x.qty=n;saveLocal();render();
+function exportData(){
+  const rows=[["중고재고"],["모델명","바코드번호","수량","상태"],...data.inventory.map(x=>[x.model,x.serial,x.qty,x.status||"정상"]),[],["전체 내역"],["구분","일시","모델명","바코드","수량","가맹점","입고내용","폐기사유"],...data.history.map(x=>[x.kind,x.at,x.model,x.serial,x.qty,x.store,x.note,x.reason])];
+  const c=v=>'"'+String(v??"").replaceAll('"','""')+'"',blob=new Blob(["\uFEFF"+rows.map(r=>r.map(c).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="중고재고관리_전체분석.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
 }
-function resetAll(){
-  const p=prompt("관리자 비밀번호를 다시 입력하세요.");
-  if(p!=="admin1234")return alert("관리자 비밀번호가 맞지 않습니다.");
-  if(!confirm("전체 재고와 내역을 초기화하시겠습니까?"))return;
-  A.inventory=[];A.history=[];A.disposals=[];saveLocal();render();alert("초기화되었습니다.");
-}
-function exportAll(){
-  const rows=[["중고재고"],["모델명","바코드번호","수량","상태"],...A.inventory.map(x=>[x.model,x.serial,x.qty,x.status||"정상"]),[],["전체 내역"],["구분","일시","모델명","바코드","수량","가맹점","입고내용","폐기사유"],...A.history.map(x=>[x.kind,x.at,x.model,x.serial,x.qty,x.store,x.note,x.reason])];
-  const cell=v=>`"${String(v??"").replaceAll('"','""')}"`;const blob=new Blob(["\uFEFF"+rows.map(r=>r.map(cell).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"});
-  const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="중고재고관리_전체분석.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
-}
-function openScanner(targetSelector){
-  const el=$(targetSelector);if(!el)return;
-  const box=document.createElement("div");box.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:12px";
-  box.innerHTML='<div style="width:min(560px,96vw);background:#fff;border-radius:20px;padding:15px;box-sizing:border-box"><div style="font-size:20px;font-weight:900;margin-bottom:10px">바코드 촬영</div><div style="position:relative;aspect-ratio:4/3;background:#101521;border-radius:15px;overflow:hidden"><video id="camera" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video><div style="position:absolute;left:9%;right:9%;top:23%;bottom:23%;border:2px solid #fff;border-radius:10px"></div></div><div id="camera-note" style="font-size:12px;color:#657188;line-height:1.5;margin-top:8px">카메라 권한을 허용한 뒤 바코드를 중앙에 맞추고 촬영하세요.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px"><button id="shot" style="height:46px;border:0;border-radius:12px;background:#2f73e8;color:#fff;font-weight:800">촬영</button><button id="close" style="height:46px;border:0;border-radius:12px;background:#edf1f7;font-weight:800">닫기</button></div></div>';
-  document.body.appendChild(box);let stream=null;
-  const close=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());box.remove()};$("#close",box).onclick=close;
-  (async()=>{try{if(!navigator.mediaDevices?.getUserMedia)throw new Error("camera");stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("#camera",box).srcObject=stream;await $("#camera",box).play()}catch(e){$("#camera-note",box).textContent="카메라를 열 수 없습니다. HTTPS 주소와 카메라 권한을 확인하세요."}})();
-  $("#shot",box).onclick=async()=>{
-    try{if("BarcodeDetector" in window){const d=new BarcodeDetector({formats:["code_128","code_39","code_93","ean_13","ean_8","upc_a","upc_e","itf_14","codabar"]});const r=await d.detect($("#camera",box));if(r?.length){el.value=r[0].rawValue;close();return}}}catch(e){}
-    const manual=prompt("자동 인식에 실패했습니다. 바코드번호를 직접 입력하세요.");if(manual!==null){el.value=manual.trim();close();}
+function resetAll(){const p=prompt("관리자 비밀번호를 다시 입력하세요.");if(p!=="admin1234")return alert("관리자 비밀번호가 맞지 않습니다.");if(!confirm("전체 데이터를 초기화하시겠습니까?"))return;data.inventory=[];data.history=[];data.disposals=[];save();render();alert("초기화되었습니다.")}
+function scanner(target){
+  const el=$(target),box=document.createElement("div");box.className="overlay";box.innerHTML='<div class="modal"><h3>바코드 촬영</h3><div class="camera"><video id="vid" autoplay muted playsinline></video><div class="frame"></div></div><div class="small" id="cam-msg">카메라 권한을 허용한 뒤 촬영 버튼을 누르세요.</div><div class="actions"><button class="btn primary" id="shot">촬영</button><button class="btn" id="close">닫기</button></div></div>';document.body.appendChild(box);
+  const close=()=>{if(scannerStream)scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;box.remove()};$("#close").onclick=close;
+  (async()=>{try{scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("#vid").srcObject=scannerStream;await $("#vid").play()}catch(e){$("#cam-msg").textContent="카메라를 열 수 없습니다. HTTPS 주소와 카메라 권한을 확인하세요."}})();
+  $("#shot").onclick=async()=>{let value="";
+    try{if("BarcodeDetector" in window){const d=new BarcodeDetector({formats:["code_128","code_39","code_93","ean_13","ean_8","upc_a","upc_e","itf_14","codabar"]}),r=await d.detect($("#vid"));if(r?.length)value=r[0].rawValue}}catch(e){}
+    if(!value){const m=prompt("자동 인식에 실패했습니다. 바코드번호를 직접 입력하세요.");if(m!==null)value=m.trim()}
+    if(value){el.value=value;close()}
   };
 }
-async function login(){
-  const id=$("#login-id").value.trim(),pw=$("#login-pw").value;
-  if(!id||!pw)return alert("아이디와 비밀번호를 입력하세요.");
-  const d=DEMO[id];if(d&&d.password===pw){A.user={username:id,name:d.name,role:d.role};A.shared=false;loadLocal();appShell();return;}
-  alert("로그인 실패\n관리자: admin / admin1234\n사용자: staff / staff1234");
+function login(){
+  const id=$("#login-id").value.trim(),pw=$("#login-pw").value,d={admin:{password:"admin1234",name:"관리자",role:"admin"},staff:{password:"staff1234",name:"직원",role:"user"}}[id];
+  if(!d||d.password!==pw)return alert("아이디 또는 비밀번호가 맞지 않습니다.\n관리자: admin / admin1234\n사용자: staff / staff1234");
+  user={id,name:d.name,role:d.role};$("#login-screen").style.display="none";$("#app").style.display="block";$("#user-name").textContent=d.name;load();render();
 }
-async function logout(){A.user=null;A.view="dashboard";loginScreen();}
-
-function applyMobileLayout(){
-  // Inline styles are used deliberately so the UI still renders even if a host strips CSS blocks.
-  const nav=document.getElementById("bottom");
-  const stats=document.getElementById("stats");
-  if(window.innerWidth<=700 && nav) nav.style.gridTemplateColumns="repeat(4,1fr)";
-  if(window.innerWidth<=700 && stats) stats.style.gridTemplateColumns="repeat(2,1fr)";
-}
-loadLocal();loginScreen();window.addEventListener("resize",applyMobileLayout);
+$("#login-btn").onclick=login;
+$("#login-pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+load();
 </script>
-
-<!-- Supabase is optional. The page remains fully styled and usable in demo mode without it. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
