@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>WAREHOUSE CONTROL</title>
+<style>
+:root{
+ --bg:#f5f6f8;--panel:#fff;--ink:#172033;--muted:#6f7785;--line:#dde2e8;
+ --accent:#1d4ed8;--accent2:#0f766e;--danger:#b42318;--amber:#9a6700;
+ --sidebar:#111827;--sidebar2:#0b1220;--white:#fff;
+}
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100%;min-height:100%;margin:0;padding:0;overflow-x:hidden}
+body{font-family:"Malgun Gothic","Noto Sans KR",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #93b4ff;outline-offset:1px}
+.app{display:flex;min-height:100vh;width:100%;max-width:100%;min-width:0}
+.sidebar{flex:0 0 250px;width:250px;background:linear-gradient(180deg,var(--sidebar),var(--sidebar2));color:#dbe4ef;padding:22px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-size:18px;font-weight:800;letter-spacing:.04em;margin:0 8px 5px;line-height:1.6}
+.brand-sub{font-size:11px;color:#94a3b8;margin:0 8px 22px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:12px 13px;border-radius:9px;margin:0}
+.nav button.active,.nav button:hover{background:#243044;color:#fff}
+.sidebar-bottom{margin-top:24px}
+.user-chip{font-size:12px;color:#94a3b8;border-top:1px solid #273244;padding-top:15px}
+.main{flex:1 1 0;width:0;min-width:0;max-width:100%;overflow:hidden}
+.topbar{min-height:70px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 26px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.top-title{font-size:15px;font-weight:700}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.container{width:100%;max-width:100%;min-width:0;padding:26px 26px 42px;overflow:hidden}
+.page{display:none;min-width:0}.page.active{display:block}
+h1{font-size:27px;letter-spacing:-.03em;margin:0 0 6px;line-height:1.35}
+h2{font-size:18px;margin:0 0 14px}
+h3{margin:0;font-size:14px}
+.subtitle{color:var(--muted);margin-bottom:24px;font-size:13px;line-height:1.6}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:12px;min-width:0}
+.kpi .label{font-size:12px;color:var(--muted);margin-bottom:10px}.kpi .value{font-size:28px;font-weight:800;letter-spacing:-.03em;overflow-wrap:anywhere}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;max-width:100%;overflow:hidden}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.muted{color:var(--muted);font-size:12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px;min-width:0}
+.toolbar .grow{flex:1}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 12px;border-radius:8px;font-weight:700;font-size:12px;min-height:36px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.dark{background:#172033;border-color:#172033;color:#fff}.btn.danger{color:var(--danger);border-color:#efc6c3}.btn.ghost{background:#f8fafc}
+input,select,textarea{max-width:100%;width:100%;min-width:0;border:1px solid #cfd6df;background:#fff;border-radius:8px;padding:9px 10px;outline:none;color:var(--ink)}
+input:focus,select:focus,textarea:focus{border-color:#8aa7e8;box-shadow:0 0 0 3px rgba(29,78,216,.08)}
+.search{max-width:330px}.table-wrap{width:100%;max-width:100%;min-width:0;overflow:auto;border:1px solid var(--line);border-radius:10px;overscroll-behavior-x:contain}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:10px 11px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle;white-space:nowrap}
+th{background:#f7f8fa;color:#4b5563;text-align:left;font-size:11px}
+td.right,th.right{text-align:right}tr:last-child td{border-bottom:0}
+.badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:800}
+.badge.stock{background:#e8f0ff;color:#1d4ed8}.badge.repair{background:#fff3df;color:#9a6700}.badge.shop{background:#efe8ff;color:#6d28d9}.badge.product{background:#e7f7f1;color:#0f766e}.badge.disposal{background:#fdecec;color:#b42318}.badge.ship{background:#eef2f7;color:#475569}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.form-grid .span2{grid-column:span 2}.form-grid .span4{grid-column:1/-1}
+.form-label{font-size:11px;color:#667085;margin:0 0 5px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:30;padding:18px}.modal-backdrop.open{display:flex}
+.modal{width:min(920px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;border:1px solid var(--line);padding:20px}
+.modal h2{margin:0 0 16px;font-size:18px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+.chart{height:250px;display:flex;align-items:flex-end;gap:clamp(3px,1vw,12px);padding:10px 4px 22px;width:100%;max-width:100%;min-width:0;overflow:hidden}
+.bar-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar-stack{width:min(72%,65px);min-width:8px;display:flex;flex-direction:column;justify-content:flex-end;height:185px;border-bottom:1px solid #cbd5e1}
+.seg{min-height:2px}.seg.in{background:#1d4ed8}.seg.out{background:#64748b}.seg.rep{background:#d97706}.seg.disp{background:#b42318}.seg.prod{background:#0f766e}
+.bar-label{font-size:10px;color:#667085;text-align:center;max-width:100%;overflow-wrap:anywhere}.bar-total{font-size:10px;font-weight:800}
+.notice{padding:12px 14px;border:1px solid #dbe5f7;background:#f8fbff;border-radius:9px;color:#41556f;font-size:12px;line-height:1.6;margin-top:12px}
+.empty{padding:32px;text-align:center;color:#7a8492;font-size:12px}.footer-note{color:#8b95a3;font-size:11px;margin-top:14px;line-height:1.5}
+@media(max-width:1200px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){
+ .app{display:block}
+ .sidebar{width:100%;height:auto;position:static;padding:10px 12px;overflow:visible}
+ .brand,.brand-sub,.sidebar-bottom{display:none}
+ .nav{display:flex;flex-direction:row;overflow-x:auto;gap:4px;max-width:100%;padding-bottom:2px}
+ .nav button{flex:0 0 auto;width:auto;white-space:nowrap;margin:0;padding:10px 12px}
+ .main{width:100%;max-width:100%;overflow:hidden}
+ .topbar{padding:11px 13px;gap:9px}
+ .top-actions{width:100%}.top-actions .btn{flex:1 1 auto}
+ .container{padding:18px 12px 30px}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .kpi{padding:13px}.kpi .value{font-size:24px}
+ .grid2{grid-template-columns:minmax(0,1fr)}
+ .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .form-grid .span2{grid-column:span 2}.form-grid .span4{grid-column:1/-1}
+ .panel{padding:13px}
+ .search{max-width:100%;flex:1 1 100%}
+ h1{font-size:23px}
+ .chart{gap:3px;height:230px}
+ .bar-label{font-size:9px}
+}
+@media(max-width:430px){
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .top-actions{display:grid;grid-template-columns:1fr 1fr}
+ .modal{padding:14px}
+ .form-grid{grid-template-columns:minmax(0,1fr)}
+ .form-grid .span2,.form-grid .span4{grid-column:auto}
+ .chart{gap:2px;padding-left:0;padding-right:0}
+ .bar-stack{width:75%;min-width:5px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">WAREHOUSE<br>CONTROL</div>
+    <div class="brand-sub">PRO INVENTORY MANAGEMENT</div>
+    <nav class="nav" id="nav">
+      <button class="active" data-page="dashboard">대시보드</button>
+      <button data-page="inventory">재고관리</button>
+      <button data-page="transactions">입·출고 이력</button>
+      <button data-page="repair">수리관리</button>
+      <button data-page="reports">월간·연간 보고서</button>
+      <button data-page="settings">설정</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="user-chip" id="userChip">로컬 저장 모드 · 이 브라우저에 저장</div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="top-title" id="topTitle">재고 운영 대시보드</div>
+      <div class="top-actions">
+        <button class="btn" onclick="openItemModal()">+ 재고 등록</button>
+        <button class="btn primary" onclick="openTxModal()">+ 입·출고 등록</button>
+      </div>
+    </header>
+    <section class="container">
+      <div id="page-dashboard" class="page active">
+        <h1>재고 운영 대시보드</h1>
+        <div class="subtitle">현재 재고와 수리·상품화 흐름을 한 화면에서 관리합니다.</div>
+        <div class="kpis" id="kpiArea"></div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-title"><h3>품목별 현재 현황</h3><span class="muted">수량 기준</span></div>
+            <div class="table-wrap"><table id="dashTable"></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><h3>이번 달 처리 현황</h3><span class="muted" id="dashMonth"></span></div>
+            <div id="monthlyChart" class="chart"></div>
+            <div class="footer-note">막대는 입고·출고·수리·폐기·상품화 건수를 품목별로 비교합니다.</div>
+          </div>
+        </div>
+        <div class="notice">권장 업무 흐름: <b>A/S입고 → 수리기 창고입고 → 수리기 업체발송 → 수리완료/재입고 → 상품화완료 → 가맹점 출고</b>. 폐기 대상은 폐기 등록으로 별도 추적합니다.</div>
+      </div>
+
+      <div id="page-inventory" class="page">
+        <h1>재고관리</h1><div class="subtitle">품목·바코드·모델·가맹점 등 모든 내용을 직접 편집할 수 있습니다.</div>
+        <div class="toolbar">
+          <input class="search" id="invSearch" placeholder="품목 / 바코드 / 모델 / 제조사 검색" oninput="renderInventory()">
+          <select id="invStatus" onchange="renderInventory()"><option value="">전체 상태</option><option value="stock">일반재고</option><option value="repair">수리기 창고</option><option value="shop">수리업체</option><option value="product">상품화완료</option><option value="ship">출고</option><option value="disposal">폐기</option></select>
+          <div class="grow"></div><button class="btn" onclick="exportCSV('inventory')">재고 CSV</button><button class="btn primary" onclick="openItemModal()">+ 재고 등록</button>
+        </div>
+        <div class="table-wrap"><table id="inventoryTable"></table></div>
+      </div>
+
+      <div id="page-transactions" class="page">
+        <h1>입·출고 이력</h1><div class="subtitle">등록된 모든 변동내역을 수정하거나 삭제할 수 있습니다.</div>
+        <div class="toolbar">
+          <input class="search" id="txSearch" placeholder="검색" oninput="renderTransactions()">
+          <select id="txMonth" onchange="renderTransactions()"><option value="">전체 기간</option></select>
+          <div class="grow"></div><button class="btn" onclick="exportCSV('transactions')">이력 CSV</button><button class="btn primary" onclick="openTxModal()">+ 입·출고 등록</button>
+        </div>
+        <div class="table-wrap"><table id="txTable"></table></div>
+      </div>
+
+      <div id="page-repair" class="page">
+        <h1>수리관리</h1><div class="subtitle">수리기 창고 → 업체발송 → 수리완료/재입고 흐름을 별도 관리합니다.</div>
+        <div class="kpis" id="repairKpi"></div>
+        <div class="panel"><div class="panel-title"><h3>수리 진행 품목</h3><span class="muted">수리기 창고 / 수리업체</span></div><div class="table-wrap"><table id="repairTable"></table></div></div>
+      </div>
+
+      <div id="page-reports" class="page">
+        <h1>월간·연간 보고서</h1><div class="subtitle">거래 이력을 기준으로 자동 집계하며, 표의 원자료는 언제든 수정할 수 있습니다.</div>
+        <div class="toolbar"><select id="reportYear" onchange="renderReports()"></select><select id="reportMonth" onchange="renderReports()"><option value="">연간</option></select><div class="grow"></div><button class="btn" onclick="exportCSV('report')">보고서 CSV</button></div>
+        <div class="panel"><div class="panel-title"><h3 id="reportTitle">분석 결과</h3></div><div class="table-wrap"><table id="reportTable"></table></div><div id="reportChart" class="chart"></div></div>
+      </div>
+
+      <div id="page-settings" class="page">
+        <h1>설정</h1><div class="subtitle">프로그램의 제목, 품목, 데이터 백업을 직접 관리합니다.</div>
+        <div class="grid2">
+          <div class="panel"><div class="panel-title"><h3>기본 설정</h3></div><div class="form-grid"><div class="span2"><div class="form-label">프로그램 명칭</div><input id="setTitle"></div><div class="span2"><div class="form-label">회사/창고 명칭</div><input id="setSite"></div></div><div class="modal-actions"><button class="btn primary" onclick="saveSettings()">저장</button></div></div>
+          <div class="panel"><div class="panel-title"><h3>데이터 백업 / 복원</h3></div><div class="toolbar"><button class="btn dark" onclick="backupJSON()">전체 데이터 백업</button><label class="btn">백업 파일 불러오기<input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreJSON(event)"></label></div><div class="notice">이 파일은 현재 브라우저에 저장된 데이터의 백업입니다. 다른 기기에서 사용하려면 백업 파일을 직접 복원해야 합니다.</div></div>
+        </div>
+        <div class="panel" style="margin-top:16px"><div class="panel-title"><h3>품목 관리</h3><button class="btn" onclick="addCategory()">+ 품목 추가</button></div><div class="table-wrap"><table id="catTable"></table></div></div>
+        <div class="panel" style="margin-top:16px"><div class="panel-title"><h3>초기화</h3><span class="muted">실수 방지를 위해 2단계 확인</span></div><button class="btn danger" onclick="resetAll()">전체 데이터 삭제</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="itemModal"><div class="modal">
+  <h2 id="itemModalTitle">재고 등록</h2><input type="hidden" id="itemId">
+  <div class="form-grid">
+    <div><div class="form-label">품목</div><select id="itemCategory"></select></div>
+    <div><div class="form-label">바코드번호</div><input id="itemBarcode" placeholder="바코드번호"></div>
+    <div><div class="form-label">모델명</div><input id="itemModel"></div>
+    <div><div class="form-label">제조사</div><input id="itemMaker"></div>
+    <div><div class="form-label">가맹점</div><input id="itemStore"></div>
+    <div><div class="form-label">채널</div><input id="itemChannel"></div>
+    <div><div class="form-label">일반재고</div><input id="itemStock" type="number" min="0" value="0"></div>
+    <div><div class="form-label">수리기 창고</div><input id="itemRepair" type="number" min="0" value="0"></div>
+    <div><div class="form-label">수리업체</div><input id="itemVendor" type="number" min="0" value="0"></div>
+    <div><div class="form-label">상품화완료</div><input id="itemProduct" type="number" min="0" value="0"></div>
+    <div><div class="form-label">출고</div><input id="itemShipped" type="number" min="0" value="0"></div>
+    <div><div class="form-label">폐기</div><input id="itemDisposal" type="number" min="0" value="0"></div>
+    <div class="span4"><div class="form-label">비고</div><textarea id="itemNote" rows="2"></textarea></div>
+  </div>
+  <div class="modal-actions"><button class="btn" onclick="closeModal('itemModal')">취소</button><button class="btn primary" onclick="saveItem()">저장</button></div>
+</div></div>
+
+<div class="modal-backdrop" id="txModal"><div class="modal">
+  <h2 id="txModalTitle">입·출고 등록</h2><input type="hidden" id="txId">
+  <div class="form-grid">
+    <div><div class="form-label">일자</div><input id="txDate" type="date"></div>
+    <div><div class="form-label">처리구분</div><select id="txType"></select></div>
+    <div><div class="form-label">품목</div><select id="txCategory"></select></div>
+    <div><div class="form-label">수량</div><input id="txQty" type="number" min="1" value="1"></div>
+    <div class="span2"><div class="form-label">대상 품목</div><select id="txItem"></select></div>
+    <div><div class="form-label">바코드번호</div><input id="txBarcode" placeholder="직접 입력 가능"></div>
+    <div><div class="form-label">모델명</div><input id="txModel" placeholder="직접 입력 가능"></div>
+    <div><div class="form-label">업체/창고</div><input id="txPartner"></div>
+    <div><div class="form-label">가맹점</div><input id="txStore"></div>
+    <div class="span2"><div class="form-label">사유 / 처리내용</div><input id="txReason"></div>
+    <div class="span4"><div class="form-label">비고</div><input id="txNote"></div>
+  </div>
+  <div class="modal-actions"><button class="btn" onclick="closeModal('txModal')">취소</button><button class="btn primary" onclick="saveTx()">저장</button></div>
+</div></div>
+
+<script>
+"use strict";
+const $ = selector => document.querySelector(selector);
+const DEFAULT_CATEGORIES=["포스","백업","멀티패드","프린트","태블릿","토스프론트"];
+const DEFAULT_TYPES=["일반 입고","일반 출고","A/S입고","수리기 창고입고","수리기 업체발송","수리완료/재입고","상품화완료","가맹점 출고","폐기"];
+let db={items:[],transactions:[],categories:[...DEFAULT_CATEGORIES],settings:{title:"WAREHOUSE CONTROL",site:""},nextId:1};
+let activePage="dashboard";
+
+let serverConnected=false, serverBaseline=null, serverQueue=Promise.resolve(), pendingServerWrites=0, receivingRemote=false, syncPollStarted=false;
+function cloneData(value){return JSON.parse(JSON.stringify(value));}
+function stableStringify(value){if(Array.isArray(value))return "["+value.map(stableStringify).join(",")+"]";if(value&&typeof value==="object")return "{"+Object.keys(value).sort().map(k=>JSON.stringify(k)+":"+stableStringify(value[k])).join(",")+"}";return JSON.stringify(value);}
+function defaultDB(){return {items:[],transactions:[],categories:[...DEFAULT_CATEGORIES],settings:{title:"WAREHOUSE CONTROL",site:""},nextId:1};}
+function normalizeDB(raw){const d={...defaultDB(),...(raw||{})};d.items=(Array.isArray(d.items)?d.items:[]).map(x=>({...x,id:String(x.id),updatedAt:String(x.updatedAt||"")}));d.transactions=(Array.isArray(d.transactions)?d.transactions:[]).map(x=>({...x,id:String(x.id),itemId:x.itemId?String(x.itemId):"",updatedAt:String(x.updatedAt||"")}));d.categories=Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEFAULT_CATEGORIES];d.settings={title:"WAREHOUSE CONTROL",site:"",...(d.settings||{})};d.nextId=Number(d.nextId)||1;return d;}
+function cacheDB(){try{localStorage.setItem("warehouse-control-data-v2",JSON.stringify(db));}catch(e){console.warn("로컬 캐시 저장 실패",e);}}
+function loadDB(){try{const raw=localStorage.getItem("warehouse-control-data-v2");if(raw)db=normalizeDB(JSON.parse(raw));else db=normalizeDB(db);}catch(e){console.warn("저장 데이터 읽기 오류",e);db=normalizeDB(db);}}
+function dataSignature(record){const clean={...record};delete clean.updatedAt;delete clean._expectedUpdatedAt;return stableStringify(clean);}
+function recordsDelta(baseRows,currentRows){const baseMap=new Map((baseRows||[]).map(x=>[String(x.id),x]));const currentMap=new Map((currentRows||[]).map(x=>[String(x.id),x]));const upserts=[];for(const record of currentRows||[]){const rid=String(record.id),previous=baseMap.get(rid);if(!previous||dataSignature(previous)!==dataSignature(record)){const expected=previous?String(previous.updatedAt||""):"";const oldMs=Date.parse(expected)||0;record.updatedAt=new Date(Math.max(Date.now(),oldMs+1)).toISOString();upserts.push({...cloneData(record),_expectedUpdatedAt:expected});}}const deletes=(baseRows||[]).filter(x=>!currentMap.has(String(x.id))).map(x=>String(x.id));return {upserts,deletes};}
+function updateServerStatus(message,isError=false){const el=document.getElementById("userChip");if(el){el.textContent=message;el.style.color=isError?"#fca5a5":"";}}
+function hasGasBridge(){return typeof google!=="undefined"&&google.script&&google.script.run;}
+function saveDB(){cacheDB();if(receivingRemote||!serverConnected||!serverBaseline||!hasGasBridge())return;const itemDiff=recordsDelta(serverBaseline.items,db.items);const txDiff=recordsDelta(serverBaseline.transactions,db.transactions);const categoriesChanged=stableStringify(serverBaseline.categories)!==stableStringify(db.categories);const settingsChanged=stableStringify(serverBaseline.settings)!==stableStringify(db.settings);const delta={itemsUpsert:itemDiff.upserts,itemsDelete:itemDiff.deletes,transactionsUpsert:txDiff.upserts,transactionsDelete:txDiff.deletes,categoriesChanged,categories:cloneData(db.categories),settingsChanged,settings:cloneData(db.settings)};if(!itemDiff.upserts.length&&!itemDiff.deletes.length&&!txDiff.upserts.length&&!txDiff.deletes.length&&!categoriesChanged&&!settingsChanged)return;serverBaseline=cloneData(db);pendingServerWrites++;updateServerStatus("Google Sheets 저장 중...");serverQueue=serverQueue.catch(()=>{}).then(()=>new Promise((resolve,reject)=>{google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).applyDelta(delta);})).then(result=>{if(!result||!result.ok){if(result&&result.data){receivingRemote=true;db=normalizeDB(result.data);serverBaseline=cloneData(db);cacheDB();renderAll();receivingRemote=false;}updateServerStatus("동시 수정 충돌 — 최신 데이터로 갱신",true);alert((result&&result.message)||"다른 사용자가 같은 항목을 수정했습니다. 최신 데이터로 바뀌었습니다. 다시 확인해 주세요.");}else{updateServerStatus("Google Sheets 공용 저장 연결됨");}}).catch(error=>{console.error("공용 서버 저장 실패",error);updateServerStatus("서버 저장 실패 — 인터넷 연결 확인",true);alert("공용 서버 저장에 실패했습니다. 인터넷 연결을 확인한 뒤 다시 저장하세요.\n"+(error&&error.message?error.message:""));}).finally(()=>{pendingServerWrites=Math.max(0,pendingServerWrites-1);});}
+function pullServerData(){if(!serverConnected||pendingServerWrites>0||!hasGasBridge())return;if(document.querySelector(".modal-backdrop.open"))return;const active=document.activeElement;if(active&&["INPUT","TEXTAREA","SELECT"].includes(active.tagName))return;google.script.run.withSuccessHandler(remote=>{if(pendingServerWrites>0)return;const incoming=normalizeDB(remote);if(stableStringify(incoming)!==stableStringify(serverBaseline||{})){receivingRemote=true;db=incoming;serverBaseline=cloneData(incoming);cacheDB();renderAll();receivingRemote=false;updateServerStatus("Google Sheets 공용 데이터 동기화됨");}}).withFailureHandler(error=>{console.warn("공용 서버 새로고침 실패",error);updateServerStatus("서버 연결 확인 필요",true);}).getAppData();}
+function connectSharedSheet(){if(!hasGasBridge()){updateServerStatus("로컬 저장 모드 — Apps Script 웹앱에서 열어야 공유됩니다",true);return;}updateServerStatus("Google Sheets 공용 서버 연결 중...");const localCache=cloneData(db);google.script.run.withSuccessHandler(remoteRaw=>{const remote=normalizeDB(remoteRaw);const hasRemoteData=remote.items.length>0||remote.transactions.length>0;const hasLocalData=localCache.items.length>0||localCache.transactions.length>0;serverConnected=true;if(!hasRemoteData&&hasLocalData){db=normalizeDB(localCache);serverBaseline=remote;saveDB();updateServerStatus("기존 이 기기 데이터를 공용 시트로 이전 중...");}else{db=remote;serverBaseline=cloneData(remote);cacheDB();updateServerStatus("Google Sheets 공용 저장 연결됨");}renderAll();if(!syncPollStarted){syncPollStarted=true;setInterval(pullServerData,8000);}}).withFailureHandler(error=>{serverConnected=false;console.error("Google Sheets 연결 실패",error);updateServerStatus("공용 시트 연결 실패 — 설치 안내 확인",true);alert("Google Sheets에 연결하지 못했습니다. Apps Script에서 setup()을 먼저 실행하고 웹앱을 배포했는지 확인하세요.\n"+(error&&error.message?error.message:""));}).getAppData();}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function num(v){const n=Number(v);return Number.isFinite(n)&&n>0?n:0}
+function id(){return 'r'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10)}
+function dateISO(){return new Date().toISOString().slice(0,10)}
+function fmt(v){return Number(v||0).toLocaleString("ko-KR")}
+function catName(c){return c||"미분류"}
+function statusLabel(s){return ({stock:"일반재고",repair:"수리기 창고",shop:"수리업체",product:"상품화완료",ship:"출고",disposal:"폐기"})[s]||s}
+function itemStatus(i){if(num(i.disposal)>0)return "disposal";if(num(i.vendor)>0)return "shop";if(num(i.repair)>0)return "repair";if(num(i.product)>0)return "product";if(num(i.shipped)>0&&num(i.stock)===0)return "ship";return "stock"}
+function totalStock(i){return num(i.stock)+num(i.repair)+num(i.vendor)+num(i.product)}
+function txKind(type){if(type==="일반 입고"||type==="A/S입고"||type==="수리완료/재입고")return "in";if(type==="일반 출고"||type==="가맹점 출고")return "out";if(type==="폐기")return "disposal";return "move"}
+function titleForPage(p){return ({dashboard:"재고 운영 대시보드",inventory:"재고관리",transactions:"입·출고 이력",repair:"수리관리",reports:"월간·연간 보고서",settings:"설정"})[p]||"재고 운영 대시보드"}
+function setPage(p){activePage=p;document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.id==="page-"+p));document.querySelectorAll(".nav button").forEach(el=>el.classList.toggle("active",el.dataset.page===p));document.getElementById("topTitle").textContent=titleForPage(p);renderAll();window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+
+function renderAll(){renderDashboard();renderInventory();renderTransactions();renderRepair();renderReports();renderSettings();fillSelects()}
+function renderDashboard(){
+ const items=db.items,tx=db.transactions;
+ const sum=(field)=>items.reduce((a,i)=>a+num(i[field]),0);
+ const kpis=[["총 보유재고",items.reduce((a,i)=>a+totalStock(i),0)],["수리기 창고",sum("repair")],["수리업체",sum("vendor")],["상품화완료",sum("product")],["누적 폐기",sum("disposal")]];
+ document.getElementById("kpiArea").innerHTML=kpis.map(k=>`<div class="kpi"><div class="label">${k[0]}</div><div class="value">${fmt(k[1])}</div></div>`).join("");
+ const cats=[...db.categories];
+ const cols=[["stock","일반재고"],["repair","수리기"],["vendor","업체"],["product","상품화"],["shipped","출고"],["disposal","폐기"]];
+ document.getElementById("dashTable").innerHTML="<thead><tr><th>품목</th>"+cols.map(c=>`<th class="right">${c[1]}</th>`).join("")+"</tr></thead><tbody>"+
+ cats.map(c=>{const a=items.filter(i=>i.category===c);return `<tr><td><b>${esc(c)}</b></td>${cols.map(col=>`<td class="right">${fmt(a.reduce((s,i)=>s+num(i[col[0]]),0))}</td>`).join("")}</tr>`}).join("")+"</tbody>";
+ const now=new Date(),ym=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+ document.getElementById("dashMonth").textContent=now.getFullYear()+"년 "+(now.getMonth()+1)+"월";
+ const types=[["in","입고"],["out","출고"],["repair","수리"],["disposal","폐기"],["product","상품화"]];
+ const monthly=types.map(t=>({name:t[1],n:tx.filter(x=>String(x.date||"").startsWith(ym)&&(
+   t[0]==="in"?["일반 입고","A/S입고","수리완료/재입고"].includes(x.type):
+   t[0]==="out"?["일반 출고","가맹점 출고"].includes(x.type):
+   t[0]==="repair"?["수리기 창고입고","수리기 업체발송"].includes(x.type):
+   t[0]==="disposal"?x.type==="폐기":x.type==="상품화완료"
+ )).reduce((s,x)=>s+num(x.qty),0)}));
+ const max=Math.max(1,...monthly.map(x=>x.n));
+ document.getElementById("monthlyChart").innerHTML=monthly.map((x,i)=>`<div class="bar-col"><div class="bar-total">${fmt(x.n)}</div><div class="bar-stack"><div class="seg ${["in","out","rep","disp","prod"][i]}" style="height:${Math.max(2,x.n/max*170)}px"></div></div><div class="bar-label">${x.name}</div></div>`).join("");
+}
+function renderInventory(){
+ const el=document.getElementById("inventoryTable");if(!el)return;
+ const q=(document.getElementById("invSearch")?.value||"").toLowerCase(),status=document.getElementById("invStatus")?.value||"";
+ const rows=db.items.filter(i=>(!status||itemStatus(i)===status)&&[i.category,i.barcode,i.model,i.maker,i.store,i.channel].some(v=>String(v||"").toLowerCase().includes(q)));
+ el.innerHTML="<thead><tr><th>품목</th><th>바코드번호</th><th>모델명</th><th>제조사</th><th>가맹점</th><th>일반</th><th>수리기</th><th>업체</th><th>상품화</th><th>출고</th><th>폐기</th><th>상태</th><th>작업</th></tr></thead><tbody>"+
+ (rows.length?rows.map(i=>`<tr><td>${esc(i.category)}</td><td>${esc(i.barcode)}</td><td>${esc(i.model)}</td><td>${esc(i.maker)}</td><td>${esc(i.store)}</td><td class="right">${fmt(i.stock)}</td><td class="right">${fmt(i.repair)}</td><td class="right">${fmt(i.vendor)}</td><td class="right">${fmt(i.product)}</td><td class="right">${fmt(i.shipped)}</td><td class="right">${fmt(i.disposal)}</td><td><span class="badge ${itemStatus(i)}">${statusLabel(itemStatus(i))}</span></td><td><button class="btn" onclick="openItemModal('${i.id}')">수정</button> <button class="btn danger" onclick="deleteItem('${i.id}')">삭제</button></td></tr>`).join(""):'<tr><td colspan="13" class="empty">등록된 재고가 없습니다.</td></tr>')+"</tbody>";
+}
+function renderTransactions(){
+ const el=document.getElementById("txTable");if(!el)return;
+ const q=(document.getElementById("txSearch")?.value||"").toLowerCase(),month=document.getElementById("txMonth")?.value||"";
+ const rows=db.transactions.filter(x=>(!month||String(x.date||"").startsWith(month))&&[x.type,x.category,x.barcode,x.model,x.partner,x.store,x.reason,x.note].some(v=>String(v||"").toLowerCase().includes(q))).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.id).localeCompare(String(a.id)));
+ el.innerHTML="<thead><tr><th>일자</th><th>처리구분</th><th>품목</th><th>수량</th><th>바코드</th><th>모델명</th><th>업체/창고</th><th>가맹점</th><th>사유/내용</th><th>작업</th></tr></thead><tbody>"+
+ (rows.length?rows.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.category)}</td><td class="right">${fmt(x.qty)}</td><td>${esc(x.barcode)}</td><td>${esc(x.model)}</td><td>${esc(x.partner)}</td><td>${esc(x.store)}</td><td>${esc(x.reason||x.note)}</td><td><button class="btn" onclick="openTxModal('${x.id}')">수정</button> <button class="btn danger" onclick="deleteTx('${x.id}')">삭제</button></td></tr>`).join(""):'<tr><td colspan="10" class="empty">등록된 이력이 없습니다.</td></tr>')+"</tbody>";
+}
+function renderRepair(){
+ const open=db.items.filter(i=>num(i.repair)+num(i.vendor)>0);
+ const sums=[["수리기 창고",db.items.reduce((s,i)=>s+num(i.repair),0)],["수리업체",db.items.reduce((s,i)=>s+num(i.vendor),0)],["수리 처리 이력",db.transactions.filter(x=>["수리기 창고입고","수리기 업체발송","수리완료/재입고"].includes(x.type)).length]];
+ document.getElementById("repairKpi").innerHTML=sums.map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value">${fmt(x[1])}</div></div>`).join("");
+ document.getElementById("repairTable").innerHTML="<thead><tr><th>품목</th><th>모델명</th><th>바코드</th><th>수리기 창고</th><th>수리업체</th><th>가맹점</th><th>비고</th></tr></thead><tbody>"+(open.length?open.map(i=>`<tr><td>${esc(i.category)}</td><td>${esc(i.model)}</td><td>${esc(i.barcode)}</td><td>${fmt(i.repair)}</td><td>${fmt(i.vendor)}</td><td>${esc(i.store)}</td><td>${esc(i.note)}</td></tr>`).join(""):'<tr><td colspan="7" class="empty">진행 중인 수리 품목이 없습니다.</td></tr>')+"</tbody>";
+}
+function renderReports(){
+ const ysel=document.getElementById("reportYear"),msel=document.getElementById("reportMonth");if(!ysel||!msel)return;
+ const years=[...new Set([new Date().getFullYear(),...db.transactions.map(x=>Number(String(x.date||"").slice(0,4))).filter(Boolean)])].sort((a,b)=>b-a);
+ const oldY=ysel.value;ysel.innerHTML=years.map(y=>`<option value="${y}">${y}년</option>`).join("");if(years.includes(Number(oldY)))ysel.value=oldY;
+ if(!msel.options.length||msel.options.length===1){for(let m=1;m<=12;m++)msel.insertAdjacentHTML("beforeend",`<option value="${String(m).padStart(2,"0")}">${m}월</option>`)}
+ const y=Number(ysel.value||new Date().getFullYear()),m=msel.value,rows=db.transactions.filter(x=>String(x.date||"").startsWith(String(y))&&(!m||String(x.date).slice(5,7)===m));
+ document.getElementById("reportTitle").textContent=m?`${y}년 ${Number(m)}월 처리 현황`:`${y}년 연간 처리 현황`;
+ const group={};rows.forEach(x=>{const k=x.category||"미분류";group[k]??={in:0,out:0,repair:0,product:0,disposal:0};if(["일반 입고","A/S입고","수리완료/재입고"].includes(x.type))group[k].in+=num(x.qty);if(["일반 출고","가맹점 출고"].includes(x.type))group[k].out+=num(x.qty);if(["수리기 창고입고","수리기 업체발송"].includes(x.type))group[k].repair+=num(x.qty);if(x.type==="상품화완료")group[k].product+=num(x.qty);if(x.type==="폐기")group[k].disposal+=num(x.qty)});
+ document.getElementById("reportTable").innerHTML="<thead><tr><th>품목</th><th>입고</th><th>출고</th><th>수리처리</th><th>상품화</th><th>폐기</th></tr></thead><tbody>"+(Object.keys(group).length?Object.entries(group).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${fmt(v.in)}</td><td>${fmt(v.out)}</td><td>${fmt(v.repair)}</td><td>${fmt(v.product)}</td><td>${fmt(v.disposal)}</td></tr>`).join(""):'<tr><td colspan="6" class="empty">해당 기간에 처리 내역이 없습니다.</td></tr>')+"</tbody>";
+ const max=Math.max(1,...Object.values(group).flatMap(v=>[v.in,v.out,v.repair,v.product,v.disposal]));
+ document.getElementById("reportChart").innerHTML=Object.entries(group).map(([k,v])=>`<div class="bar-col"><div class="bar-total">${fmt(v.in+v.out+v.repair+v.product+v.disposal)}</div><div class="bar-stack">${[['in',v.in],['out',v.out],['rep',v.repair],['prod',v.product],['disp',v.disposal]].map(([c,n])=>`<div class="seg ${c}" style="height:${Math.max(0,n/max*165)}px"></div>`).join("")}</div><div class="bar-label">${esc(k)}</div></div>`).join("");
+}
+function renderSettings(){
+ const a=document.getElementById("setTitle"),b=document.getElementById("setSite");if(a&&document.activeElement!==a)a.value=db.settings.title||"WAREHOUSE CONTROL";if(b&&document.activeElement!==b)b.value=db.settings.site||"";
+ document.getElementById("catTable").innerHTML="<thead><tr><th>품목명</th><th>현재 재고</th><th>작업</th></tr></thead><tbody>"+db.categories.map(c=>`<tr><td>${esc(c)}</td><td>${fmt(db.items.filter(i=>i.category===c).reduce((s,i)=>s+total(i),0))}</td><td><button class="btn" onclick="renameCategory('${encodeURIComponent(c)}')">이름 변경</button> <button class="btn danger" onclick="removeCategory('${encodeURIComponent(c)}')">삭제</button></td></tr>`).join("")+"</tbody>";
+}
+function total(i){return num(i.stock)+num(i.repair)+num(i.vendor)+num(i.product)}
+function fillSelects(){
+ const cats=db.categories;
+ const fill=(id,selected)=>{const el=document.getElementById(id);if(!el)return;const old=selected??el.value;el.innerHTML=cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");if(cats.includes(old))el.value=old};
+ fill("itemCategory");fill("txCategory");
+ const item=document.getElementById("txItem");if(item){const old=item.value;item.innerHTML='<option value="">품목 선택(선택사항)</option>'+db.items.map(i=>`<option value="${i.id}">${esc(i.category)} · ${esc(i.model||"모델 미입력")} · ${esc(i.barcode||"바코드 없음")}</option>`).join("");if([...item.options].some(o=>o.value===old))item.value=old}
+ const type=document.getElementById("txType");if(type){const old=type.value;type.innerHTML=DEFAULT_TYPES.map(t=>`<option>${t}</option>`).join("");if(DEFAULT_TYPES.includes(old))type.value=old}
+ const month=document.getElementById("txMonth");if(month){const old=month.value,months=[...new Set(db.transactions.map(x=>String(x.date||"").slice(0,7)).filter(Boolean))].sort().reverse();month.innerHTML='<option value="">전체 기간</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join("");if(months.includes(old))month.value=old}
+}
+function openItemModal(itemId){
+ fillSelects();const i=db.items.find(x=>x.id===itemId);$("#itemModalTitle").textContent=i?"재고 수정":"재고 등록";
+ const fields={itemId:i?.id||"",itemCategory:i?.category||db.categories[0],itemBarcode:i?.barcode||"",itemModel:i?.model||"",itemMaker:i?.maker||"",itemStore:i?.store||"",itemChannel:i?.channel||"",itemStock:i?.stock??0,itemRepair:i?.repair??0,itemVendor:i?.vendor??0,itemProduct:i?.product??0,itemShipped:i?.shipped??0,itemDisposal:i?.disposal??0,itemNote:i?.note||""};
+ Object.entries(fields).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v});
+ openModal("itemModal");
+}
+function saveItem(){
+ const item={id:$("#itemId").value||id(),category:$("#itemCategory").value,barcode:$("#itemBarcode").value.trim(),model:$("#itemModel").value.trim(),maker:$("#itemMaker").value.trim(),store:$("#itemStore").value.trim(),channel:$("#itemChannel").value.trim(),stock:num($("#itemStock").value),repair:num($("#itemRepair").value),vendor:num($("#itemVendor").value),product:num($("#itemProduct").value),shipped:num($("#itemShipped").value),disposal:num($("#itemDisposal").value),note:$("#itemNote").value.trim()};
+ if(!item.model&&!item.barcode)return alert("모델명 또는 바코드번호를 입력하세요.");
+ const index=db.items.findIndex(x=>x.id===item.id);if(index>=0)db.items[index]=item;else db.items.push(item);
+ saveDB();closeModal("itemModal");renderAll();
+}
+function deleteItem(itemId){if(!confirm("이 재고 항목을 삭제하시겠습니까?"))return;db.items=db.items.filter(x=>String(x.id)!==String(itemId));saveDB();renderAll()}
+function openTxModal(txId){
+ fillSelects();const x=db.transactions.find(t=>t.id===txId);$("#txModalTitle").textContent=x?"입·출고 이력 수정":"입·출고 등록";
+ const vals={txId:x?.id||"",txDate:x?.date||dateISO(),txType:x?.type||"일반 입고",txCategory:x?.category||db.categories[0],txQty:x?.qty??1,txItem:x?.itemId||"",txBarcode:x?.barcode||"",txModel:x?.model||"",txPartner:x?.partner||"",txStore:x?.store||"",txReason:x?.reason||"",txNote:x?.note||""};
+ Object.entries(vals).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v});
+ openModal("txModal");
+}
+function applyTxToItem(t,reverse=false){
+ const item=db.items.find(i=>String(i.id)===String(t.itemId));if(!item)return;
+ const q=num(t.qty)*(reverse?-1:1),type=t.type;
+ const change=(k,n)=>item[k]=Math.max(0,num(item[k])+n);
+ if(["일반 입고","A/S입고"].includes(type))change("stock",q);
+ else if(["일반 출고","가맹점 출고"].includes(type)){change("stock",-q);change("shipped",q)}
+ else if(type==="수리기 창고입고"){change("stock",-q);change("repair",q)}
+ else if(type==="수리기 업체발송"){change("repair",-q);change("vendor",q)}
+ else if(type==="수리완료/재입고"){change("vendor",-q);change("stock",q)}
+ else if(type==="상품화완료"){change("stock",-q);change("product",q)}
+ else if(type==="폐기"){change("stock",-q);change("disposal",q)}
+}
+function saveTx(){
+ const idVal=$("#txId").value||id();
+ const t={id:idVal,date:$("#txDate").value||dateISO(),type:$("#txType").value,category:$("#txCategory").value,qty:Math.max(1,num($("#txQty").value)),itemId:String($("#txItem").value||""),barcode:$("#txBarcode").value.trim(),model:$("#txModel").value.trim(),partner:$("#txPartner").value.trim(),store:$("#txStore").value.trim(),reason:$("#txReason").value.trim(),note:$("#txNote").value.trim()};
+ if(!t.category)return alert("품목을 선택하세요.");
+ const oldIndex=db.transactions.findIndex(x=>x.id===idVal);
+ if(oldIndex>=0){applyTxToItem(db.transactions[oldIndex],true);db.transactions[oldIndex]=t}else db.transactions.push(t);
+ applyTxToItem(t,false);
+ // If item selected, fill missing barcode/model from registered item for better searching.
+ const it=db.items.find(i=>String(i.id)===String(t.itemId));if(it){if(!t.barcode)t.barcode=it.barcode||"";if(!t.model)t.model=it.model||"";if(!it.category)it.category=t.category}
+ saveDB();closeModal("txModal");renderAll();
+}
+function deleteTx(txId){if(!confirm("이 이력을 삭제하시겠습니까? 재고 변동도 되돌립니다."))return;const i=db.transactions.findIndex(x=>String(x.id)===String(txId));if(i<0)return;applyTxToItem(db.transactions[i],true);db.transactions.splice(i,1);saveDB();renderAll()}
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+document.querySelectorAll(".modal-backdrop").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
+function saveSettings(){db.settings.title=$("#setTitle").value.trim()||"WAREHOUSE CONTROL";db.settings.site=$("#setSite").value.trim();document.title=db.settings.title;saveDB();alert("설정을 저장했습니다.");renderAll()}
+function addCategory(){const n=prompt("추가할 품목 이름");if(!n||!n.trim())return;if(db.categories.includes(n.trim()))return alert("이미 있는 품목입니다.");db.categories.push(n.trim());saveDB();renderAll()}
+function renameCategory(enc){const old=decodeURIComponent(enc),n=prompt("새 품목 이름",old);if(!n||!n.trim()||n.trim()===old)return;const name=n.trim();db.categories=db.categories.map(c=>c===old?name:c);db.items.forEach(i=>{if(i.category===old)i.category=name});db.transactions.forEach(t=>{if(t.category===old)t.category=name});saveDB();renderAll()}
+function removeCategory(enc){const c=decodeURIComponent(enc);if(db.items.some(i=>i.category===c)||db.transactions.some(t=>t.category===c))return alert("해당 품목에 재고/이력이 있어 삭제할 수 없습니다.");if(!confirm("품목 '"+c+"'을 삭제할까요?"))return;db.categories=db.categories.filter(x=>x!==c);if(!db.categories.length)db.categories.push("기타");saveDB();renderAll()}
+function resetAll(){if(!confirm("전체 데이터를 삭제합니다. 계속할까요?"))return;const x=prompt("확인을 위해 DELETE 를 입력하세요.");if(x!=="DELETE")return alert("초기화를 취소했습니다.");db={items:[],transactions:[],categories:[...DEFAULT_CATEGORIES],settings:{title:"WAREHOUSE CONTROL",site:""},nextId:1};saveDB();renderAll();alert("전체 데이터가 삭제되었습니다.")}
+function backupJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});downloadBlob(blob,"WAREHOUSE_CONTROL_백업_"+dateISO()+".json")}
+function restoreJSON(ev){const f=ev.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!Array.isArray(d.items)||!Array.isArray(d.transactions)||!Array.isArray(d.categories))throw new Error("백업 파일 형식이 맞지 않습니다.");if(!confirm("현재 데이터를 백업 파일 내용으로 교체할까요?"))return;db=normalizeDB({...db,...d});saveDB();renderAll();alert("복원했습니다.")}catch(e){alert("복원 실패: "+e.message)}finally{ev.target.value=""}};reader.readAsText(f)}
+function downloadBlob(blob,name){const a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function exportCSV(which){
+ let rows=[],name="data.csv";
+ if(which==="inventory"){name="재고목록.csv";rows=[["품목","바코드번호","모델명","제조사","가맹점","채널","일반재고","수리기 창고","수리업체","상품화완료","출고","폐기","비고"],...db.items.map(i=>[i.category,i.barcode,i.model,i.maker,i.store,i.channel,i.stock,i.repair,i.vendor,i.product,i.shipped,i.disposal,i.note])]}
+ else if(which==="transactions"){name="입출고이력.csv";rows=[["일자","처리구분","품목","수량","바코드","모델명","업체/창고","가맹점","사유","비고"],...db.transactions.map(t=>[t.date,t.type,t.category,t.qty,t.barcode,t.model,t.partner,t.store,t.reason,t.note])]}
+ else {name="보고서.csv";rows=[["일자","처리구분","품목","수량","바코드","모델명","업체/창고","가맹점","사유","비고"],...db.transactions.map(t=>[t.date,t.type,t.category,t.qty,t.barcode,t.model,t.partner,t.store,t.reason,t.note])]}
+ const cell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';const csv="\uFEFF"+rows.map(r=>r.map(cell).join(",")).join("\r\n");downloadBlob(new Blob([csv],{type:"text/csv;charset=utf-8"}),name)
+}
+function fillTxItem(){const item=db.items.find(i=>String(i.id)===String($("#txItem").value));if(!item)return;$("#txCategory").value=item.category||db.categories[0];$("#txBarcode").value=item.barcode||"";$("#txModel").value=item.model||"";$("#txStore").value=item.store||""}
+$("#txItem").addEventListener("change",fillTxItem);
+function boot(){
+ loadDB();document.title=db.settings.title||"WAREHOUSE CONTROL";
+ document.getElementById("setTitle").value=db.settings.title||"WAREHOUSE CONTROL";document.getElementById("setSite").value=db.settings.site||"";
+ renderAll();
+ if(hasGasBridge()) connectSharedSheet();
+ else updateServerStatus("로컬 데모 모드 — 여러 기기 공유는 Apps Script 웹앱 주소에서 사용하세요",true);
+}
+boot();
+</script>
+</body>
+</html>
